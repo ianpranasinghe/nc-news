@@ -154,7 +154,7 @@ describe("Utils function: makeRefObj", () => {
 });
 
 describe("Utils Functions: formatComments", () => {
-  it("Returns an new array", () => {
+  it("Returns a new array", () => {
     const insertion = [];
     const invocation = formatComments(insertion);
     expect(invocation).to.be.an("array");
