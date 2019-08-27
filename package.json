@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
+    "@types/chai-datetime": "0.0.33",
     "express": "^4.17.1"
   },
   "devDependencies": {

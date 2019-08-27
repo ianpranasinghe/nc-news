@@ -9,4 +9,5 @@ exports.up = knex => {
 
 exports.down = knex => {
   console.log("DROPPING - users table... ");
+  return knex.schema.dropTable("users");
 };

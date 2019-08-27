@@ -8,16 +8,24 @@ const {
 const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = knex => {
+  const topicsInsertions = knex("topics")
+    .insert(topicData)
+    .returning("*");
+  const usersInsertions = knex("users")
+    .insert(userData)
+    .returning("*");
+
   return knex.migrate
     .rollback()
-    .then(() => knew.migrate.latest())
+    .then(() => knex.migrate.latest())
+    .then(() => Promise.all([topicsInsertions, usersInsertions]))
     .then(() => {
-      const topicsInsertions = knex("topics").insert(topicData);
-      const usersInsertions = knex("users").insert(userData);
+      const formattedData = formatDates(articleData);
+      return knex("articles")
+        .insert(formattedData)
+        .returning("*");
 
-      return Promise.all([topicsInsertions, usersInsertions])
-        .then(() => {
-          /* 
+      /* 
           
           Your article data is currently in the incorrect format and will violate your SQL schema. 
           
@@ -25,9 +33,20 @@ exports.seed = knex => {
     
           Your comment insertions will depend on information from the seeded articles, so make sure to return the data after it's been seeded.
           */
-        })
-        .then(articleRows => {
-          /* 
+    })
+    .then(articleRows => {
+      console.log(articleRows);
+      const formattedDates = formatDates(commentData); //Formats the date for out comment data
+      const createdLookup = makeRefObj(
+        articleRows,
+        commentData,
+        "belongs_to",
+        "article_id",
+        "title"
+      ); // creates a lookup object using both article rows and comment data, but - why the shit does the for each fail, and yet work? eh? eh? ehhhhh?
+      console.log(createdLookup);
+
+      /* 
     
           Your comment data is currently in the incorrect format and will violate your SQL schema. 
     
@@ -36,9 +55,8 @@ exports.seed = knex => {
           You will need to write and test the provided makeRefObj and formatComments utility functions to be able insert your comment data.
           */
 
-          const articleRef = makeRefObj(articleRows);
-          const formattedComments = formatComments(commentData, articleRef);
-          return knex("comments").insert(formattedComments);
-        });
+      const articleRef = makeRefObj(articleRows);
+      const formattedComments = formatComments(commentData, articleRef);
+      return knex("comments").insert(formattedComments);
     });
 };
