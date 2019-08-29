@@ -276,4 +276,36 @@ describe("Utils Functions: formatComments", () => {
     ];
     expect(invocation).to.eql(expectedResult);
   });
+  it("Tests if the original inout has been mutated or not", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const lookUp = {
+      "They're not exactly dogs, are they?": 3,
+      "UNCOVERED: catspiracy to bring down democracy": 2,
+      "Living in the shadow of a great man": 1
+    };
+
+    const keyToChange = "belongs_to";
+    const newKeyName = "article_id";
+    formatComments(input, keyToChange, newKeyName, lookUp);
+    const expectedResult = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    expect(input).to.eql(expectedResult);
+  });
 });

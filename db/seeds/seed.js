@@ -27,24 +27,18 @@ exports.seed = knex => {
     })
     .then(articleRows => {
       const formattedDates = formatDates(commentData); //Formats the date for out Comment Data
-      const createdLookup = makeRefObj(
-        articleRows,
-        commentData,
-        "belongs_to",
-        "article_id",
-        "title"
-      ); // creates a lookup object using both article rows and comment data
+      const createdLookup = makeRefObj(articleRows, "title", "article_id"); // creates a lookup object using both article rows and comment data
       const changeToAuthor = formatComments(
         formattedDates,
         "created_by",
         "author"
-      ); // Changes the created_by key name to author
+      ); /* !!!!! create a new function for above, seperate to below */
       const formattedComments = formatComments(
         changeToAuthor,
         "belongs_to",
         "article_id",
         createdLookup
-      ); // Changes the belongs_to key name tp article_id and changes the value to the correct id.
+      );
       return knex("comments").insert(formattedComments);
     });
 };

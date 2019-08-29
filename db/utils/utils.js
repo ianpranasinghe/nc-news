@@ -20,8 +20,10 @@ exports.formatComments = (insertion, keyToChange, newKeyName, lookup) => {
     const changeKeyName = insertion.map(item => {
       const newObj = { ...item };
       newObj[newKeyName] = newObj[keyToChange];
-      delete newObj[keyToChange];
+
       newObj[newKeyName] = lookup[newObj[newKeyName]];
+
+      delete newObj[keyToChange];
       return newObj;
     });
     return changeKeyName;
