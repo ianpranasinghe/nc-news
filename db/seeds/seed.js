@@ -20,52 +20,31 @@ exports.seed = knex => {
     .then(() => knex.migrate.latest())
     .then(() => Promise.all([topicsInsertions, usersInsertions]))
     .then(() => {
-      const formattedData = formatDates(articleData);
+      const formattedData = formatDates(articleData); // Formats the dates inside our Articles Data
       return knex("articles")
         .insert(formattedData)
         .returning("*");
-
-      /* 
-          
-          Your article data is currently in the incorrect format and will violate your SQL schema. 
-          
-          You will need to write and test the provided formatDate utility function to be able insert your article data.
-    
-          Your comment insertions will depend on information from the seeded articles, so make sure to return the data after it's been seeded.
-          */
     })
     .then(articleRows => {
-      const formattedDates = formatDates(commentData); //Formats the date for out comment data
+      const formattedDates = formatDates(commentData); //Formats the date for out Comment Data
       const createdLookup = makeRefObj(
         articleRows,
         commentData,
         "belongs_to",
         "article_id",
         "title"
-      ); // creates a lookup object using both article rows and comment data, but - why the shit does the for each fail, and yet work? eh? eh? ehhhhh?
+      ); // creates a lookup object using both article rows and comment data
       const changeToAuthor = formatComments(
         formattedDates,
         "created_by",
         "author"
-      );
+      ); // Changes the created_by key name to author
       const formattedComments = formatComments(
         changeToAuthor,
         "belongs_to",
         "article_id",
         createdLookup
-      );
-
-      /* 
-    
-          Your comment data is currently in the incorrect format and will violate your SQL schema. 
-    
-          Keys need renaming, values need changing, and most annoyingly, your comments currently only refer to the title of the article they belong to, not the id. 
-          
-          You will need to write and test the provided makeRefObj and formatComments utility functions to be able insert your comment data.
-          */
-
-      // const articleRef = makeRefObj(articleRows);
-      // const formattedComments = formatComments(commentData, articleRef);
+      ); // Changes the belongs_to key name tp article_id and changes the value to the correct id.
       return knex("comments").insert(formattedComments);
     });
 };
