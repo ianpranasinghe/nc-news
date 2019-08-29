@@ -236,6 +236,91 @@ describe("/api", () => {
           });
         });
       });
+      describe("/comments", () => {
+        describe("POST", () => {
+          it("Status: 201 - Returns the new posted comment as requested with the correct keys in the response", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({
+                username: "butter_bridge",
+                body:
+                  "The aircon has water now, but it is I who comments on this post"
+              })
+              .expect(201)
+              .then(response => {
+                expect(response.body.postedResponse[0]).to.have.keys([
+                  "comment_id",
+                  "author",
+                  "article_id",
+                  "votes",
+                  "created_at",
+                  "body"
+                ]);
+              });
+          });
+          /*
+          it("Status 201: Returns the new posted comment as requested and returns as expected", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({
+                username: "butter_bridge",
+                body:
+                  "The aircon has water now, but it is I who comments on this post"
+              })
+              .expect(201)
+              .then(response => {
+                const dateNow = Date.now();
+                expect(response.body.postedResponse[0]).to.eql({
+                  postedResponse: [
+                    {
+                      comment_id: 19,
+                      author: "butter_bridge",
+                      article_id: 1,
+                      votes: 0,
+                      created_at: new Date(dateNow),
+                      body:
+                        "The aircon has water now, but it is I who comments on this post"
+                    }
+                  ]
+                });
+              });
+          });
+          */
+          describe("ERRORS", () => {
+            it("Status:400 - Returns an error when we try to add a user that doesn't exist", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({
+                  username: "Dillon",
+                  body:
+                    "The aircon has water now, but it is I who comments on this post"
+                })
+                .expect(404)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "User does not exist" });
+                });
+            });
+            it("Status:400 - Returns an error when an empty object is posted", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({})
+                .expect(400)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "Bad Request" });
+                });
+            });
+            it("Status:400 - Returns an error when an invalid post object is sent", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ rating_out_of_five: 6 })
+                .expect(400)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "Bad Request" });
+                });
+            });
+          });
+        });
+      });
     });
   });
 });

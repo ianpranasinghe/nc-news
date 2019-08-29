@@ -1,6 +1,7 @@
 const {
   selectArticleById,
-  editArticleById
+  editArticleById,
+  insertComment
 } = require("../models/articlesModels.js");
 
 exports.getArticleById = (req, res, next) => {
@@ -18,6 +19,16 @@ exports.patchArticleById = (req, res, next) => {
   editArticleById(articleID, patchObject)
     .then(patchedArticle => {
       res.status(200).send({ patchedArticle });
+    })
+    .catch(next);
+};
+
+exports.postComment = (req, res, next) => {
+  const articleID = req.params;
+  const postBody = req.body;
+  insertComment(articleID, postBody)
+    .then(postedResponse => {
+      res.status(201).send({ postedResponse });
     })
     .catch(next);
 };

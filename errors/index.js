@@ -7,14 +7,17 @@ exports.errorHandler = (err, req, res, next) => {
 };
 
 exports.errorHandler400s = (err, req, res, next) => {
-  const codes = ["22P02"];
+  const codes = ["22P02", "23502"];
   if (codes.includes(err.code)) {
     res.status(400).send({ msg: "Bad Request" });
+  } else if (err.code === "23503") {
+    res.status(404).send({ msg: "User does not exist" });
   } else {
     next(err);
   }
 };
 
 exports.errorHandler500s = (err, req, res, next) => {
+  console.log(err, "<--- errror inside the index.js");
   res.status(500).send({ msg: "Internal Server Error" });
 };

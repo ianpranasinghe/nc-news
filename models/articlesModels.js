@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { formatComments } = require("../db/utils/utils");
 
 exports.selectArticleById = ({ article_id }) => {
   return connection("articles")
@@ -34,4 +35,14 @@ exports.editArticleById = ({ article_id }, { inc_votes }) => {
         }
       });
   }
+};
+
+exports.insertComment = ({ article_id }, patchObject) => {
+  return connection("comments")
+    .returning("*")
+    .insert({
+      author: patchObject.username,
+      body: patchObject.body,
+      article_id: article_id
+    });
 };
