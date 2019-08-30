@@ -3,7 +3,7 @@ const request = require("supertest");
 const app = require("../app");
 const chai = require("chai"); //
 const { expect } = chai;
-const chaiSorted = require("chai-sorted");
+chai.use(require("chai-sorted"));
 const connection = require("../db/connection.js");
 
 describe("/api", () => {
@@ -331,8 +331,8 @@ describe("/api", () => {
             });
           });
         });
-        describe.only("GET", () => {
-          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties", () => {
+        describe("GET", () => {
+          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties, sorted by default - 'created_at' & ordered by default - DESCENDING", () => {
             return request(app)
               .get("/api/articles/1/comments")
               .expect(200)
@@ -346,8 +346,92 @@ describe("/api", () => {
                     "created_at",
                     "body"
                   ]);
+
+                  expect(response.body.comments).to.be.sortedBy("created_at", {
+                    descending: true
+                  });
                 });
               });
+          });
+
+          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties, sorted by - 'author', ordered by default 'DESCENDING'", () => {
+            return request(app)
+              .get("/api/articles/1/comments?sort_by=author")
+              .expect(200)
+              .then(response => {
+                response.body.comments.map(comment => {
+                  expect(response.body.comments[0]).to.have.keys([
+                    "comment_id",
+                    "author",
+                    "article_id",
+                    "votes",
+                    "created_at",
+                    "body"
+                  ]);
+
+                  expect(response.body.comments).to.be.sortedBy("author", {
+                    descending: true
+                  });
+                });
+              });
+          });
+
+          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties ordered by 'ASCENDING'", () => {
+            return request(app)
+              .get("/api/articles/1/comments?order_by=asc")
+              .expect(200)
+              .then(response => {
+                response.body.comments.map(comment => {
+                  expect(response.body.comments[0]).to.have.keys([
+                    "comment_id",
+                    "author",
+                    "article_id",
+                    "votes",
+                    "created_at",
+                    "body"
+                  ]);
+
+                  expect(response.body.comments).to.be.sortedBy("created_at");
+                });
+              });
+          });
+
+          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties, sorted by - 'author' in 'ASCENDING'` order", () => {
+            return request(app)
+              .get("/api/articles/1/comments?sort_by=author&order_by=asc")
+              .expect(200)
+              .then(response => {
+                response.body.comments.map(comment => {
+                  expect(response.body.comments[0]).to.have.keys([
+                    "comment_id",
+                    "author",
+                    "article_id",
+                    "votes",
+                    "created_at",
+                    "body"
+                  ]);
+
+                  expect(response.body.comments).to.be.sortedBy("author");
+                });
+              });
+          });
+          describe("ERRORS", () => {
+            it("STATUS:400 - Returns an error when we try to add a column that doesn't exist to our sort query", () => {
+              return request(app)
+                .get("/api/articles/1/comments?sort_by=apple")
+                .expect(400)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "Bad Request" });
+                });
+            });
+            it("STATUS:400 - Returns an error when we try to add an invalid query", () => {
+              return request(app)
+                .get("/api/articles/1/comments?sortwrongby=apple")
+                .expect(400)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "Bad Request" });
+                });
+            });
           });
         });
       });

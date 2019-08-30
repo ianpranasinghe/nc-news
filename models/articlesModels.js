@@ -46,8 +46,19 @@ exports.insertComment = ({ article_id }, patchObject) => {
     });
 };
 
-exports.selectComments = ({ article_id }) => {
-  return connection("comments")
-    .where("article_id", article_id)
-    .returning("*");
+exports.selectComments = ({ article_id }, query) => {
+  const sortQuery = query.sort_by;
+  const orderQuery = query.order_by;
+  if (
+    query.hasOwnProperty("sort_by") ||
+    query.hasOwnProperty("order_by") ||
+    Object.keys(query).length === 0
+  ) {
+    return connection("comments")
+      .where("article_id", article_id)
+      .orderBy(sortQuery || "created_at", orderQuery || "desc")
+      .returning("*");
+  } else {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
 };
