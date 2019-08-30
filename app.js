@@ -4,6 +4,7 @@ const { apiRouter } = require("./routers/apiRouter");
 const {
   errorHandler,
   errorHandler400s,
+  errorHandler405,
   errorHandler500s
 } = require("./errors/index.js");
 // ASK HOW TO SORT OUT ERRORS, WHATS SERVER AND WHATS USER AND BLA BLA BLA
@@ -19,5 +20,6 @@ app.all("/*", (req, res, next) => {
 app.use(errorHandler);
 app.use(errorHandler400s);
 app.use(errorHandler500s);
+app.use(errorHandler405);
 
 module.exports = app;

@@ -48,6 +48,20 @@ describe("/api", () => {
         });
       });
     });
+    describe("ERRORS", () => {
+      it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+        const invalidMethods = ["patch", "put", "post", "delete"];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]("/api/topics")
+            .expect(405)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "method not allowed" });
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+    });
   });
   describe("/users", () => {
     describe("/:username", () => {
@@ -78,6 +92,20 @@ describe("/api", () => {
                 expect(response.body).to.eql({ msg: "Not Found" });
               });
           });
+        });
+      });
+      describe("ERRORS", () => {
+        it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+          const invalidMethods = ["patch", "put", "post", "delete"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/users/butter_bridge")
+              .expect(405)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "method not allowed" });
+              });
+          });
+          return Promise.all(methodPromises);
         });
       });
     });
@@ -318,6 +346,21 @@ describe("/api", () => {
         });
       });
     });
+    describe("ERRORS", () => {
+      it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+        const invalidMethods = ["patch", "put", "delete"];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]("/api/articles")
+            .expect(405)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "method not allowed" });
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+    });
+
     describe("/:article_id", () => {
       describe("GET", () => {
         it("Status: 200 - Returns the article object, dependant on ID with the correct properties", () => {
@@ -494,34 +537,7 @@ describe("/api", () => {
                 ]);
               });
           });
-          /*
-          it("Status 201: Returns the new posted comment as requested and returns as expected", () => {
-            return request(app)
-              .post("/api/articles/1/comments")
-              .send({
-                username: "butter_bridge",
-                body:
-                  "The aircon has water now, but it is I who comments on this post"
-              })
-              .expect(201)
-              .then(response => {
-                const dateNow = Date.now();
-                expect(response.body.postedResponse[0]).to.eql({
-                  postedResponse: [
-                    {
-                      comment_id: 19,
-                      author: "butter_bridge",
-                      article_id: 1,
-                      votes: 0,
-                      created_at: new Date(dateNow),
-                      body:
-                        "The aircon has water now, but it is I who comments on this post"
-                    }
-                  ]
-                });
-              });
-          });
-          */
+
           describe("ERRORS", () => {
             it("Status:400 - Returns an error when we try to add a user that doesn't exist", () => {
               return request(app)
@@ -670,6 +686,34 @@ describe("/api", () => {
             });
           });
         });
+        describe("ERRORS", () => {
+          it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+            const invalidMethods = ["patch", "put", "delete"];
+            const methodPromises = invalidMethods.map(method => {
+              return request(app)
+                [method]("/api/articles/1/comments")
+                .expect(405)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "method not allowed" });
+                });
+            });
+            return Promise.all(methodPromises);
+          });
+        });
+      });
+      describe("ERRORS", () => {
+        it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+          const invalidMethods = ["put", "delete"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/articles/1")
+              .expect(405)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "method not allowed" });
+              });
+          });
+          return Promise.all(methodPromises);
+        });
       });
     });
   });
@@ -782,7 +826,6 @@ describe("/api", () => {
             .delete("/api/comments/1")
             .expect(204)
             .then(response => {
-              console.log(response.body);
               expect(response.body).to.eql({});
             });
         });
@@ -803,6 +846,20 @@ describe("/api", () => {
                 expect(response.body).to.eql({ msg: "Bad Request" });
               });
           });
+        });
+      });
+      describe("ERRORS", () => {
+        it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+          const invalidMethods = ["get", "put", "post"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/comments/1")
+              .expect(405)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "method not allowed" });
+              });
+          });
+          return Promise.all(methodPromises);
         });
       });
     });

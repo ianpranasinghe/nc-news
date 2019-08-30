@@ -1,5 +1,6 @@
 const express = require("express");
 const commentsRouter = express.Router();
+const { errorHandler405 } = require("../errors/index.js");
 
 const {
   patchComment,
@@ -9,6 +10,7 @@ const {
 commentsRouter
   .route("/:comment_id")
   .patch(patchComment)
-  .delete(deleteComment);
+  .delete(deleteComment)
+  .all(errorHandler405);
 
 module.exports = { commentsRouter };

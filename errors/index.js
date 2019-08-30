@@ -17,6 +17,10 @@ exports.errorHandler400s = (err, req, res, next) => {
   }
 };
 
+exports.errorHandler405 = (req, res, next) => {
+  res.status(405).send({ msg: "method not allowed" });
+};
+
 exports.errorHandler500s = (err, req, res, next) => {
   res.status(500).send({ msg: "Internal Server Error" });
 };

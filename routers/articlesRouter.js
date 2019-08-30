@@ -7,17 +7,22 @@ const {
   getComments,
   getArticles
 } = require("../controllers/articlesController");
-
-articlesRouter.route("/").get(getArticles);
+const { errorHandler405 } = require("../errors/index.js");
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .all(errorHandler405);
 
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
-  .patch(patchArticleById);
+  .patch(patchArticleById)
+  .all(errorHandler405);
 
 articlesRouter
   .route("/:article_id/comments")
   .get(getComments)
-  .post(postComment);
+  .post(postComment)
+  .all(errorHandler405);
 
 module.exports = { articlesRouter };
