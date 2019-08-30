@@ -89,6 +89,7 @@ describe("/api", () => {
           .get("/api/articles")
           .expect(200)
           .then(response => {
+            console.log();
             expect(response.body.articles[0]).to.eql({
               article_id: 1,
               title: "Living in the shadow of a great man",
@@ -262,7 +263,7 @@ describe("/api", () => {
             ]);
           });
       });
-      describe.only("ERRORS", () => {
+      describe("ERRORS", () => {
         it("STATUS:400 - Returns an error when we try to add a column that doesn't exist to our sort query", () => {
           return request(app)
             .get("/api/articles?sort_by=apples")
@@ -297,6 +298,22 @@ describe("/api", () => {
             .expect(400)
             .then(response => {
               expect(response.body).to.eql({ msg: "Bad Request" });
+            });
+        });
+        it("STATUS:404 - Returns an error when we search for an author who has created no articles", () => {
+          return request(app)
+            .get("/api/articles?author=lurker")
+            .expect(404)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "Not Found" });
+            });
+        });
+        it("STATUS:404 - Returns an error we search for a topic that has no articles associated with it", () => {
+          return request(app)
+            .get("/api/articles?author=cats")
+            .expect(404)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "Not Found" });
             });
         });
       });
@@ -651,6 +668,140 @@ describe("/api", () => {
                   expect(response.body).to.eql({ msg: "Bad Request" });
                 });
             });
+          });
+        });
+      });
+    });
+  });
+  describe("/comments", () => {
+    describe("/:comment_id", () => {
+      describe("PATCH", () => {
+        it("Status: 200 - Returns the newly updated comment, with the vote incremented as requested ", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(response => {
+              expect(response.body).to.eql({
+                comment: [
+                  {
+                    comment_id: 1,
+                    author: "butter_bridge",
+                    article_id: 9,
+                    votes: 17,
+                    created_at: "2017-11-22T12:36:03.389Z",
+                    body:
+                      "Oh, I've got compassion running out of my " +
+                      "nose, pal! I'm the Sultan of Sentiment!"
+                  }
+                ]
+              });
+            });
+        });
+        it("Status: 200 - Returns the newly updated comment, with the vote decremented as requested ", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -100 })
+            .expect(200)
+            .then(response => {
+              expect(response.body).to.eql({
+                comment: [
+                  {
+                    comment_id: 1,
+                    author: "butter_bridge",
+                    article_id: 9,
+                    votes: -84,
+                    created_at: "2017-11-22T12:36:03.389Z",
+                    body:
+                      "Oh, I've got compassion running out of my " +
+                      "nose, pal! I'm the Sultan of Sentiment!"
+                  }
+                ]
+              });
+            });
+        });
+        describe("ERRORS", () => {
+          it("Status: 404 - Returns an error message when a patch request for a non existent comment is made", () => {
+            return request(app)
+              .patch("/api/comments/10000")
+              .send({ inc_votes: -100 })
+              .expect(404)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "Not Found" });
+              });
+          });
+          it("Status: 400 - Returns an error message when an invalid parameter is provided", () => {
+            return request(app)
+              .patch("/api/comments/apples")
+              .send({ inc_votes: -100 })
+              .expect(400)
+              .then(response => {
+                expect(response.body).to.eql({
+                  msg: "Bad Request"
+                });
+              });
+          });
+          it("Status: 400 - Returns an error message when an no input is provided", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({})
+              .expect(400)
+              .then(response => {
+                expect(response.body).to.eql({
+                  msg: "Bad Request"
+                });
+              });
+          });
+          it("Status: 400 - Returns an error message when an invalid typeof input is provided", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: "cat" })
+              .expect(400)
+              .then(response => {
+                expect(response.body).to.eql({
+                  msg: "Bad Request"
+                });
+              });
+          });
+          it("Status: 400 - Returns an error message when an additional property is added to the request body", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: "cat", name: "Smitch" })
+              .expect(400)
+              .then(response => {
+                expect(response.body).to.eql({
+                  msg: "Bad Request"
+                });
+              });
+          });
+        });
+      });
+      describe("DELETE", () => {
+        it("STATUS:204 - Returns empty object after deleting the requested comment", () => {
+          return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+            .then(response => {
+              console.log(response.body);
+              expect(response.body).to.eql({});
+            });
+        });
+        describe("ERRORS", () => {
+          it("STATUS: 404 - Returns error message when a valid comment_id is passed but does not exist", () => {
+            return request(app)
+              .delete("/api/comments/100000")
+              .expect(404)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "Comment does not exist" });
+              });
+          });
+          it("STATUS: 400 - Returns error message when a invalid comment_id is passed", () => {
+            return request(app)
+              .delete("/api/comments/apples")
+              .expect(400)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "Bad Request" });
+              });
           });
         });
       });
