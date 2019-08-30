@@ -48,10 +48,10 @@ exports.insertComment = ({ article_id }, patchObject) => {
 
 exports.selectComments = ({ article_id }, query) => {
   const sortQuery = query.sort_by;
-  const orderQuery = query.order_by;
+  const orderQuery = query.order;
   if (
     query.hasOwnProperty("sort_by") ||
-    query.hasOwnProperty("order_by") ||
+    query.hasOwnProperty("order") ||
     Object.keys(query).length === 0
   ) {
     return connection("comments")
@@ -61,4 +61,23 @@ exports.selectComments = ({ article_id }, query) => {
   } else {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
+};
+
+exports.selectArticles = query => {
+  const sortQuery = query.sort_by;
+  const orderQuery = query.order;
+  const authorQuery = query.author;
+  const topicQuery = query.topic;
+
+  return connection("articles")
+    .select("articles.*")
+    .count({ comment_count: "comments.comment_id" })
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .orderBy(sortQuery || "created_at", orderQuery || "desc")
+    .groupBy("articles.article_id")
+    .returning("*")
+    .modify(query => {
+      if (authorQuery) query.where({ "articles.author": authorQuery });
+      if (topicQuery) query.where({ "articles.topic": topicQuery });
+    });
 };

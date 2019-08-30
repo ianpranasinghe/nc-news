@@ -83,9 +83,189 @@ describe("/api", () => {
     });
   });
   describe("/articles", () => {
+    describe("GET", () => {
+      it("Status: 200 - Returns the requested articles with the correct properties, sorted by default - 'created_at' & ordered by default DESCENDING", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: "13"
+            });
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+      it("Status:200 - Returns the requested articles with the correct properties, sorted by - 'votes' & ordered by default DESCENDING", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: "13"
+            });
+            expect(response.body.articles).to.be.sortedBy("votes", {
+              descending: true
+            });
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+      it("Status:200 - Returns the requested articles with the correct properties, ordered by ASCENDING", () => {
+        return request(app)
+          .get("/api/articles?order=asc")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 12,
+              title: "Moustache",
+              body: "Have you seen the size of that thing?",
+              votes: 0,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "1974-11-26T12:21:54.171Z",
+              comment_count: "0"
+            });
+            expect(response.body.articles).to.be.sortedBy("created_at");
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+      it("Status:200 - Returns the requested articles with the correct properties, sorted by - 'votes' & ordered by ASCENDING", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=asc")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 11,
+              title: "Am I a cat?",
+              body:
+                "Having run out of ideas for articles, I am staring at " +
+                "the wall blankly, like a cat. Does this make me a cat?",
+              votes: 0,
+              topic: "mitch",
+              author: "icellusedkars",
+              created_at: "1978-11-25T12:21:54.171Z",
+              comment_count: "0"
+            });
+            expect(response.body.articles).to.be.sortedBy("votes");
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+      it("Status:200 - Returns the requested articles with the correct properties, filtered by requested 'author'", () => {
+        return request(app)
+          .get("/api/articles?author=butter_bridge")
+          .expect(200)
+          .then(response => {
+            response.body.articles.map(article => {
+              expect(article.author).to.equal("butter_bridge");
+            });
+            expect(response.body.articles[0]).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: "13"
+            });
+            expect(response.body.articles).to.be.descending;
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+      it("Status:200 - Returns the requested articles with the correct properties, filtered by requested 'topic'", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(response => {
+            response.body.articles.map(article => {
+              expect(article.topic).to.equal("mitch");
+            });
+
+            expect(response.body.articles[0]).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: "13"
+            });
+            expect(response.body.articles).to.be.descending;
+            expect(response.body.articles[0]).to.have.all.keys([
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            ]);
+          });
+      });
+    });
     describe("/:article_id", () => {
       describe("GET", () => {
-        it("Status: 200 - Returns the requested article object with the correct properties", () => {
+        it("Status: 200 - Returns the article object, dependant on ID with the correct properties", () => {
           return request(app)
             .get("/api/articles/1")
             .expect(200)
@@ -104,6 +284,7 @@ describe("/api", () => {
                   }
                 ]
               });
+
               expect(response.body.article[0]).to.have.all.keys([
                 "author",
                 "title",
@@ -378,7 +559,7 @@ describe("/api", () => {
 
           it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties ordered by 'ASCENDING'", () => {
             return request(app)
-              .get("/api/articles/1/comments?order_by=asc")
+              .get("/api/articles/1/comments?order=asc")
               .expect(200)
               .then(response => {
                 response.body.comments.map(comment => {
@@ -398,7 +579,7 @@ describe("/api", () => {
 
           it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties, sorted by - 'author' in 'ASCENDING'` order", () => {
             return request(app)
-              .get("/api/articles/1/comments?sort_by=author&order_by=asc")
+              .get("/api/articles/1/comments?sort_by=author&order=asc")
               .expect(200)
               .then(response => {
                 response.body.comments.map(comment => {
