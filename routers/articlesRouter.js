@@ -3,7 +3,8 @@ const articlesRouter = express.Router();
 const {
   getArticleById,
   patchArticleById,
-  postComment
+  postComment,
+  getComments
 } = require("../controllers/articlesController");
 
 articlesRouter
@@ -11,6 +12,9 @@ articlesRouter
   .get(getArticleById)
   .patch(patchArticleById);
 
-articlesRouter.route("/:article_id/comments").post(postComment);
+articlesRouter
+  .route("/:article_id/comments")
+  .get(getComments)
+  .post(postComment);
 
 module.exports = { articlesRouter };

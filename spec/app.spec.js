@@ -300,6 +300,17 @@ describe("/api", () => {
                   expect(response.body).to.eql({ msg: "User does not exist" });
                 });
             });
+            it("Status:400 - Returns an error when we try to add a comment without a body", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({
+                  username: "Dillon"
+                })
+                .expect(400)
+                .then(response => {
+                  expect(response.body).to.eql({ msg: "Bad Request" });
+                });
+            });
             it("Status:400 - Returns an error when an empty object is posted", () => {
               return request(app)
                 .post("/api/articles/1/comments")
@@ -318,6 +329,25 @@ describe("/api", () => {
                   expect(response.body).to.eql({ msg: "Bad Request" });
                 });
             });
+          });
+        });
+        describe.only("GET", () => {
+          it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(response => {
+                response.body.comments.map(comment => {
+                  expect(response.body.comments[0]).to.have.keys([
+                    "comment_id",
+                    "author",
+                    "article_id",
+                    "votes",
+                    "created_at",
+                    "body"
+                  ]);
+                });
+              });
           });
         });
       });

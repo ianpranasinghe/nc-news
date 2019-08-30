@@ -1,7 +1,8 @@
 const {
   selectArticleById,
   editArticleById,
-  insertComment
+  insertComment,
+  selectComments
 } = require("../models/articlesModels.js");
 
 exports.getArticleById = (req, res, next) => {
@@ -29,6 +30,16 @@ exports.postComment = (req, res, next) => {
   insertComment(articleID, postBody)
     .then(postedResponse => {
       res.status(201).send({ postedResponse });
+    })
+    .catch(next);
+};
+
+exports.getComments = (req, res, next) => {
+  const article_id = req.params;
+  //const sortQuery = req.query;
+  selectComments(article_id)
+    .then(comments => {
+      res.status(200).send({ comments });
     })
     .catch(next);
 };

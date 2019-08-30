@@ -1,5 +1,4 @@
 const connection = require("../db/connection");
-const { formatComments } = require("../db/utils/utils");
 
 exports.selectArticleById = ({ article_id }) => {
   return connection("articles")
@@ -11,7 +10,7 @@ exports.selectArticleById = ({ article_id }) => {
       if (article_id) query.where({ "articles.article_id": article_id });
     })
     .then(article => {
-      if (article.length < 1) {
+      if (!article.length) {
         return Promise.reject({ status: 404, msg: "Path not found" });
       } else {
         return article;
@@ -45,4 +44,10 @@ exports.insertComment = ({ article_id }, patchObject) => {
       body: patchObject.body,
       article_id: article_id
     });
+};
+
+exports.selectComments = ({ article_id }) => {
+  return connection("comments")
+    .where("article_id", article_id)
+    .returning("*");
 };
