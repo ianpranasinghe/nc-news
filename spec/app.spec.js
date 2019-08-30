@@ -43,7 +43,7 @@ describe("/api", () => {
             .get("/api/tapioca")
             .expect(404)
             .then(response => {
-              expect(response.body).to.eql({ msg: "Path not found" });
+              expect(response.body).to.eql({ msg: "Not Found" });
             });
         });
       });
@@ -75,7 +75,7 @@ describe("/api", () => {
               .get("/api/users/FALSE_name")
               .expect(404)
               .then(response => {
-                expect(response.body).to.eql({ msg: "Path not found" });
+                expect(response.body).to.eql({ msg: "Not Found" });
               });
           });
         });
@@ -262,6 +262,44 @@ describe("/api", () => {
             ]);
           });
       });
+      describe.only("ERRORS", () => {
+        it("STATUS:400 - Returns an error when we try to add a column that doesn't exist to our sort query", () => {
+          return request(app)
+            .get("/api/articles?sort_by=apples")
+            .expect(400)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "Bad Request" });
+            });
+        });
+        it("STATUS:404 - Returns an error when we try search for an author that does not exist", () => {
+          return request(app)
+            .get("/api/articles?author=apples")
+            .expect(404)
+            .then(response => {
+              expect(response.body).to.eql({
+                msg: "Not Found"
+              });
+            });
+        });
+        it("STATUS:404 - Returns an error when we try search for an author that does not exist", () => {
+          return request(app)
+            .get("/api/articles?topic=apples")
+            .expect(404)
+            .then(response => {
+              expect(response.body).to.eql({
+                msg: "Not Found"
+              });
+            });
+        });
+        it("STATUS:400 - Returns an error when we try to order our response with an invalid query", () => {
+          return request(app)
+            .get("/api/articles?order=apples")
+            .expect(400)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "Bad Request" });
+            });
+        });
+      });
     });
     describe("/:article_id", () => {
       describe("GET", () => {
@@ -303,7 +341,7 @@ describe("/api", () => {
               .get("/api/articles/8767")
               .expect(404)
               .then(response => {
-                expect(response.body).to.eql({ msg: "Path not found" });
+                expect(response.body).to.eql({ msg: "Not Found" });
               });
           });
           it("Status: 400 - Returns an error message when an invalid parameter is provided", () => {
@@ -368,7 +406,7 @@ describe("/api", () => {
               .send({ inc_votes: -100 })
               .expect(404)
               .then(response => {
-                expect(response.body).to.eql({ msg: "Path not found" });
+                expect(response.body).to.eql({ msg: "Not Found" });
               });
           });
           it("Status: 400 - Returns an error message when an invalid parameter is provided", () => {

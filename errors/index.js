@@ -18,6 +18,5 @@ exports.errorHandler400s = (err, req, res, next) => {
 };
 
 exports.errorHandler500s = (err, req, res, next) => {
-  console.log(err, "<--- errror500  inside the index.js");
   res.status(500).send({ msg: "Internal Server Error" });
 };

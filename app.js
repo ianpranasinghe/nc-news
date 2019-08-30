@@ -13,7 +13,7 @@ app.use("/api", apiRouter);
 
 app.all("/*", (req, res, next) => {
   // next({status: 3456789})
-  res.status(404).send({ msg: "Path not found" });
+  res.status(404).send({ msg: "Not Found" });
 });
 
 app.use(errorHandler);
