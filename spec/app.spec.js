@@ -339,16 +339,7 @@ describe("/api", () => {
               });
             });
         });
-        it("STATUS:404 - Returns an error when we try search for an author that does not exist", () => {
-          return request(app)
-            .get("/api/articles?topic=apples")
-            .expect(404)
-            .then(response => {
-              expect(response.body).to.eql({
-                msg: "Not Found"
-              });
-            });
-        });
+
         it("STATUS:400 - Returns an error when we try to order our response with an invalid query", () => {
           return request(app)
             .get("/api/articles?order=apples")
@@ -458,6 +449,7 @@ describe("/api", () => {
                 expect(response.body).to.eql({ msg: "Not Found" });
               });
           });
+
           it("Status: 400 - Returns an error message when an invalid parameter is provided", () => {
             return request(app)
               .get("/api/articles/apples")
@@ -764,6 +756,14 @@ describe("/api", () => {
             });
             return Promise.all(methodPromises);
           });
+          it("Status: 404 - Returns an error message when a request for a non existent article is made", () => {
+            return request(app)
+              .get("/api/articles/1000/comments")
+              .expect(404)
+              .then(response => {
+                expect(response.body).to.eql({ msg: "Not Found" });
+              });
+          });
         });
       });
       describe("ERRORS", () => {
@@ -914,6 +914,14 @@ describe("/api", () => {
         });
       });
       describe("ERRORS", () => {
+        it("Status: 404 - Returns an error message when a request for a non existent article is made", () => {
+          return request(app)
+            .get("/api/articles/1000")
+            .expect(404)
+            .then(response => {
+              expect(response.body).to.eql({ msg: "Not Found" });
+            });
+        });
         it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
           const invalidMethods = ["get", "put", "post"];
           const methodPromises = invalidMethods.map(method => {
