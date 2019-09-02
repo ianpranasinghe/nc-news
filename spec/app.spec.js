@@ -13,6 +13,20 @@ describe("/api", () => {
   after("after each test disconnect", () => {
     connection.destroy();
   });
+  describe("ERRORS", () => {
+    it("Status: 405 - Returns an error when an incorrect method is attempted", () => {
+      const invalidMethods = ["get", "patch", "put", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api")
+          .expect(405)
+          .then(response => {
+            expect(response.body).to.eql({ msg: "method not allowed" });
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
   describe("/topics", () => {
     describe("GET", () => {
       it("Status:200 - Returns a successful status code", () => {
@@ -117,7 +131,6 @@ describe("/api", () => {
           .get("/api/articles")
           .expect(200)
           .then(response => {
-            console.log();
             expect(response.body.articles[0]).to.eql({
               article_id: 1,
               title: "Living in the shadow of a great man",
@@ -259,6 +272,22 @@ describe("/api", () => {
             ]);
           });
       });
+      it("Status:200 - Returns an empty array when we request an article for a user that exists but has no article", () => {
+        return request(app)
+          .get("/api/articles?author=lurker")
+          .expect(200)
+          .then(response => {
+            expect(response.body).to.eql({ articles: [] });
+          });
+      });
+      it("Status:200 - Returns an empty array when we request an article for a topic that exists but has no article", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(response => {
+            expect(response.body).to.eql({ articles: [] });
+          });
+      });
       it("Status:200 - Returns the requested articles with the correct properties, filtered by requested 'topic'", () => {
         return request(app)
           .get("/api/articles?topic=mitch")
@@ -328,14 +357,6 @@ describe("/api", () => {
               expect(response.body).to.eql({ msg: "Bad Request" });
             });
         });
-        it("STATUS:404 - Returns an error when we search for an author who has created no articles", () => {
-          return request(app)
-            .get("/api/articles?author=lurker")
-            .expect(404)
-            .then(response => {
-              expect(response.body).to.eql({ msg: "Not Found" });
-            });
-        });
         it("STATUS:404 - Returns an error we search for a topic that has no articles associated with it", () => {
           return request(app)
             .get("/api/articles?author=cats")
@@ -379,6 +400,39 @@ describe("/api", () => {
                     author: "butter_bridge",
                     created_at: "2018-11-15T12:21:54.171Z",
                     comment_count: "13"
+                  }
+                ]
+              });
+
+              expect(response.body.article[0]).to.have.all.keys([
+                "author",
+                "title",
+                "article_id",
+                "body",
+                "topic",
+                "created_at",
+                "votes",
+                "comment_count"
+              ]);
+            });
+        });
+        it("Status: 200 - Returns the article object, dependant on a different ID Specified by Ant's testing, with the correct properties", () => {
+          return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then(response => {
+              expect(response.body).to.eql({
+                article: [
+                  {
+                    article_id: 2,
+                    title: "Sony Vaio; or, The Laptop",
+                    body:
+                      "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+                    votes: 0,
+                    topic: "mitch",
+                    author: "icellusedkars",
+                    created_at: "2014-11-16T12:21:54.171Z",
+                    comment_count: "0"
                   }
                 ]
               });
@@ -459,6 +513,27 @@ describe("/api", () => {
               });
             });
         });
+        it("Status: 200 - Returns an unchaged article when sent a patch request with no information", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({})
+            .expect(200)
+            .then(response => {
+              expect(response.body).to.eql({
+                patchedArticle: [
+                  {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    body: "I find this existence challenging",
+                    votes: 100,
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    created_at: "2018-11-15T12:21:54.171Z"
+                  }
+                ]
+              });
+            });
+        });
         describe("ERRORS", () => {
           it("Status: 404 - Returns an error message when a patch request for a non existent article is made", () => {
             return request(app)
@@ -480,17 +555,7 @@ describe("/api", () => {
                 });
               });
           });
-          it("Status: 400 - Returns an error message when an no input is provided", () => {
-            return request(app)
-              .patch("/api/articles/1")
-              .send({})
-              .expect(400)
-              .then(response => {
-                expect(response.body).to.eql({
-                  msg: "Bad Request"
-                });
-              });
-          });
+
           it("Status: 400 - Returns an error message when an invalid typeof input is provided", () => {
             return request(app)
               .patch("/api/articles/1")
