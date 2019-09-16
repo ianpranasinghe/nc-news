@@ -464,17 +464,15 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    body: "I find this existence challenging",
-                    votes: 101,
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    created_at: "2018-11-15T12:21:54.171Z"
-                  }
-                ]
+                article: {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  body: "I find this existence challenging",
+                  votes: 101,
+                  topic: "mitch",
+                  author: "butter_bridge",
+                  created_at: "2018-11-15T12:21:54.171Z"
+                }
               });
             });
         });
@@ -485,17 +483,15 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    body: "I find this existence challenging",
-                    votes: 0,
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    created_at: "2018-11-15T12:21:54.171Z"
-                  }
-                ]
+                article: {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  body: "I find this existence challenging",
+                  votes: 0,
+                  topic: "mitch",
+                  author: "butter_bridge",
+                  created_at: "2018-11-15T12:21:54.171Z"
+                }
               });
             });
         });
@@ -506,30 +502,19 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    body: "I find this existence challenging",
-                    votes: 100,
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    created_at: "2018-11-15T12:21:54.171Z"
-                  }
-                ]
+                article: {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  body: "I find this existence challenging",
+                  votes: 100,
+                  topic: "mitch",
+                  author: "butter_bridge",
+                  created_at: "2018-11-15T12:21:54.171Z"
+                }
               });
             });
         });
         describe("ERRORS", () => {
-          it("Status: 404 - Returns an error message when a patch request for a non existent article is made", () => {
-            return request(app)
-              .patch("/api/articles/10000")
-              .send({ inc_votes: -100 })
-              .expect(404)
-              .then(response => {
-                expect(response.body).to.eql({ msg: "Not Found" });
-              });
-          });
           it("Status: 400 - Returns an error message when an invalid parameter is provided", () => {
             return request(app)
               .patch("/api/articles/apples")
@@ -656,6 +641,14 @@ describe("/api", () => {
                 });
               });
           });
+          it("STATUS: 200 - Gets an empty array of comments for a given article ID, where no comments exist ", () => {
+            return request(app)
+              .get("/api/articles/2/comments")
+              .expect(200)
+              .then(response => {
+                expect(response.body).to.eql({ comments: [] });
+              });
+          });
 
           it("STATUS: 200 - Gets an array of comments for a given article ID, with the expected properties, sorted by - 'author', ordered by default 'DESCENDING'", () => {
             return request(app)
@@ -749,14 +742,6 @@ describe("/api", () => {
                 });
             });
             return Promise.all(methodPromises);
-          });
-          it("Status: 404 - Returns an error message when a request for a non existent article is made", () => {
-            return request(app)
-              .get("/api/articles/1000/comments")
-              .expect(404)
-              .then(response => {
-                expect(response.body).to.eql({ msg: "Not Found" });
-              });
           });
         });
       });

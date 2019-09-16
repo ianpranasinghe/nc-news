@@ -30,7 +30,7 @@ exports.editArticleById = ({ article_id }, { inc_votes }) => {
       if (!response.length) {
         return Promise.reject({ status: 404, msg: "Not Found" });
       } else {
-        return response;
+        return response[0];
       }
     });
 };
@@ -58,11 +58,7 @@ exports.selectComments = ({ article_id }, query) => {
       .orderBy(sortQuery || "created_at", orderQuery || "desc")
       .returning("*")
       .then(response => {
-        if (!response.length) {
-          return Promise.reject({ status: 404, msg: "Not Found" });
-        } else {
-          return response;
-        }
+        return response;
       });
   } else {
     return Promise.reject({ status: 400, msg: "Bad Request" });
