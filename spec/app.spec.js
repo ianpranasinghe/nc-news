@@ -80,7 +80,7 @@ describe("/api", () => {
   describe("/users", () => {
     describe("/:username", () => {
       describe("GET", () => {
-        it.only("Status: 200 - Returns the requested user obejct with the correct properties", () => {
+        it("Status: 200 - Returns the requested user obejct with the correct properties", () => {
           return request(app)
             .get("/api/users/butter_bridge")
             .expect(200)
