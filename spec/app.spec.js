@@ -80,20 +80,18 @@ describe("/api", () => {
   describe("/users", () => {
     describe("/:username", () => {
       describe("GET", () => {
-        it("Status: 200 - Returns the requested user obejct with the correct properties", () => {
+        it.only("Status: 200 - Returns the requested user obejct with the correct properties", () => {
           return request(app)
             .get("/api/users/butter_bridge")
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                user: [
-                  {
-                    username: "butter_bridge",
-                    avatar_url:
-                      "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-                    name: "jonny"
-                  }
-                ]
+                user: {
+                  username: "butter_bridge",
+                  avatar_url:
+                    "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+                  name: "jonny"
+                }
               });
             });
         });
@@ -381,21 +379,19 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    body: "I find this existence challenging",
-                    votes: 100,
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    comment_count: "13"
-                  }
-                ]
+                article: {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  body: "I find this existence challenging",
+                  votes: 100,
+                  topic: "mitch",
+                  author: "butter_bridge",
+                  created_at: "2018-11-15T12:21:54.171Z",
+                  comment_count: "13"
+                }
               });
 
-              expect(response.body.article[0]).to.have.all.keys([
+              expect(response.body.article).to.have.all.keys([
                 "author",
                 "title",
                 "article_id",
@@ -413,22 +409,20 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 2,
-                    title: "Sony Vaio; or, The Laptop",
-                    body:
-                      "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
-                    votes: 0,
-                    topic: "mitch",
-                    author: "icellusedkars",
-                    created_at: "2014-11-16T12:21:54.171Z",
-                    comment_count: "0"
-                  }
-                ]
+                article: {
+                  article_id: 2,
+                  title: "Sony Vaio; or, The Laptop",
+                  body:
+                    "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+                  votes: 0,
+                  topic: "mitch",
+                  author: "icellusedkars",
+                  created_at: "2014-11-16T12:21:54.171Z",
+                  comment_count: "0"
+                }
               });
 
-              expect(response.body.article[0]).to.have.all.keys([
+              expect(response.body.article).to.have.all.keys([
                 "author",
                 "title",
                 "article_id",
@@ -470,7 +464,7 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                patchedArticle: [
+                article: [
                   {
                     article_id: 1,
                     title: "Living in the shadow of a great man",
@@ -491,7 +485,7 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                patchedArticle: [
+                article: [
                   {
                     article_id: 1,
                     title: "Living in the shadow of a great man",
@@ -512,7 +506,7 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                patchedArticle: [
+                article: [
                   {
                     article_id: 1,
                     title: "Living in the shadow of a great man",
@@ -584,7 +578,7 @@ describe("/api", () => {
               })
               .expect(201)
               .then(response => {
-                expect(response.body.postedResponse[0]).to.have.keys([
+                expect(response.body.comment).to.have.keys([
                   "comment_id",
                   "author",
                   "article_id",
@@ -792,18 +786,16 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                comment: [
-                  {
-                    comment_id: 1,
-                    author: "butter_bridge",
-                    article_id: 9,
-                    votes: 17,
-                    created_at: "2017-11-22T12:36:03.389Z",
-                    body:
-                      "Oh, I've got compassion running out of my " +
-                      "nose, pal! I'm the Sultan of Sentiment!"
-                  }
-                ]
+                comment: {
+                  comment_id: 1,
+                  author: "butter_bridge",
+                  article_id: 9,
+                  votes: 17,
+                  created_at: "2017-11-22T12:36:03.389Z",
+                  body:
+                    "Oh, I've got compassion running out of my " +
+                    "nose, pal! I'm the Sultan of Sentiment!"
+                }
               });
             });
         });
@@ -814,18 +806,16 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               expect(response.body).to.eql({
-                comment: [
-                  {
-                    comment_id: 1,
-                    author: "butter_bridge",
-                    article_id: 9,
-                    votes: -84,
-                    created_at: "2017-11-22T12:36:03.389Z",
-                    body:
-                      "Oh, I've got compassion running out of my " +
-                      "nose, pal! I'm the Sultan of Sentiment!"
-                  }
-                ]
+                comment: {
+                  comment_id: 1,
+                  author: "butter_bridge",
+                  article_id: 9,
+                  votes: -84,
+                  created_at: "2017-11-22T12:36:03.389Z",
+                  body:
+                    "Oh, I've got compassion running out of my " +
+                    "nose, pal! I'm the Sultan of Sentiment!"
+                }
               });
             });
         });

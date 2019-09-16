@@ -26,7 +26,7 @@ exports.seed = knex => {
         .returning("*");
     })
     .then(articleRows => {
-      const formattedDates = formatDates(commentData); //Formats the date for out Comment Data
+      const formattedDates = formatDates(commentData); //Formats the date for our Comment Data
       const createdLookup = makeRefObj(articleRows, "title", "article_id"); // creates a lookup object using both article rows and comment data
       const changeToAuthor = formatComments(
         formattedDates,

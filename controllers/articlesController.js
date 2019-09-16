@@ -19,8 +19,8 @@ exports.patchArticleById = (req, res, next) => {
   const articleID = req.params;
   const patchObject = req.body;
   editArticleById(articleID, patchObject)
-    .then(patchedArticle => {
-      res.status(200).send({ patchedArticle });
+    .then(article => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
@@ -29,8 +29,9 @@ exports.postComment = (req, res, next) => {
   const articleID = req.params;
   const postBody = req.body;
   insertComment(articleID, postBody)
-    .then(postedResponse => {
-      res.status(201).send({ postedResponse });
+    .then(response => {
+      const comment = response[0];
+      res.status(201).send({ comment });
     })
     .catch(next);
 };

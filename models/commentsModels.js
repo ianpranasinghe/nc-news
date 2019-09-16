@@ -12,7 +12,7 @@ exports.editComment = ({ comment_id }, { inc_votes }) => {
         if (!response.length) {
           return Promise.reject({ status: 404, msg: "Not Found" });
         } else {
-          return response;
+          return response[0];
         }
       });
   }

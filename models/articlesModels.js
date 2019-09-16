@@ -9,11 +9,11 @@ exports.selectArticleById = ({ article_id }) => {
     .modify(query => {
       if (article_id) query.where({ "articles.article_id": article_id });
     })
-    .then(article => {
-      if (!article.length) {
+    .then(response => {
+      if (!response.length) {
         return Promise.reject({ status: 404, msg: "Not Found" });
       } else {
-        return article;
+        return response[0];
       }
     });
 };
