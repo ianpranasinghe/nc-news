@@ -11,3 +11,11 @@ exports.selectUserByUsername = ({ username }) => {
       }
     });
 };
+
+exports.selectUsers = () => {
+  return connection("users")
+    .returning("*")
+    .then(users => {
+      return users;
+    });
+};

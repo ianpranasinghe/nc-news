@@ -121,6 +121,45 @@ describe("/api", () => {
         });
       });
     });
+    describe.only("/users", () => {
+      describe("Get", () => {
+        it("Status: 200 - Returns the requested user obejct with the correct properties", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(response => {
+              expect(response.body).to.eql({
+                users: [
+                  {
+                    username: "butter_bridge",
+                    avatar_url:
+                      "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+                    name: "jonny"
+                  },
+                  {
+                    username: "icellusedkars",
+                    avatar_url:
+                      "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+                    name: "sam"
+                  },
+                  {
+                    username: "rogersop",
+                    avatar_url:
+                      "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+                    name: "paul"
+                  },
+                  {
+                    username: "lurker",
+                    avatar_url:
+                      "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                    name: "do_nothing"
+                  }
+                ]
+              });
+            });
+        });
+      });
+    });
   });
   describe("/articles", () => {
     describe("GET", () => {
